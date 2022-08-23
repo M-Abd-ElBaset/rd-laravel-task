@@ -22,7 +22,20 @@ class EncryptionController extends Controller
             $content = file_get_contents($path);
             // dd($content);
             $encryptedContent = Crypt::encryptString($content);
-            Storage::put('encrypted_files/' . time() .  '.' . $extension, $encryptedContent);
+            
+            if($request->encrypted_file_name){
+                $file_name = $request->encrypted_file_name;
+            }else{
+                $file_name = time() .  '.' . $extension;
+            }
+
+            if($request->encryption_save_location){
+                file_put_contents($request->encryption_save_location . '/' . $file_name, $encryptedContent);
+            }
+            else{
+                Storage::put('encrypted_files/' . $file_name, $encryptedContent);
+            }
+
             return back();
         }
 
@@ -40,7 +53,20 @@ class EncryptionController extends Controller
             $extension = $request->encrypted_file->extension();
             $content = file_get_contents($path);
             $decryptedContent = Crypt::decryptString($content);
-            Storage::put('decrypted_files/' . time() .  '.' . $extension, $decryptedContent);
+            
+            if($request->decrypted_file_name){
+                $file_name = $request->decrypted_file_name;
+            }else{
+                $file_name = time() .  '.' . $extension;
+            }
+
+            if($request->decryption_save_location){
+                file_put_contents($request->decryption_save_location . '/' . $file_name, $decryptedContent);
+            }
+            else{
+                Storage::put('decrypted_files/' . time() .  '.' . $extension, $decryptedContent);
+            }
+
             return back();
         }
 
