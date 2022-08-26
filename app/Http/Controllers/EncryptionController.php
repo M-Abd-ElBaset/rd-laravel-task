@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
+use App\OpenSSLEncryption;
 
 class EncryptionController extends Controller
 {
@@ -20,8 +21,8 @@ class EncryptionController extends Controller
             // $file = Input::file('raw_file'); // get the file user sent via POST
             // $content = Storage::get($path);
             $content = file_get_contents($path);
-            // dd($content);
-            $encryptedContent = Crypt::encryptString($content);
+            // $encryptedContent = Crypt::encryptString($content);
+            $encryptedContent = OpenSSLEncryption::encrypt($content);
             
             if($request->encrypted_file_name){
                 $file_name = $request->encrypted_file_name;
@@ -52,7 +53,8 @@ class EncryptionController extends Controller
             $path = $request->encrypted_file->path();
             $extension = $request->encrypted_file->extension();
             $content = file_get_contents($path);
-            $decryptedContent = Crypt::decryptString($content);
+            // $decryptedContent = Crypt::decryptString($content);
+            $decryptedContent = OpenSSLEncryption::decrypt($content);
             
             if($request->decrypted_file_name){
                 $file_name = $request->decrypted_file_name;
