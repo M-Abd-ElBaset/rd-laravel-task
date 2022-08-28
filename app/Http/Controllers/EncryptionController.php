@@ -15,6 +15,8 @@ class EncryptionController extends Controller
             'raw_file' => 'required',
         ]);
 
+        $crypto_obj = new OpenSSLEncryption();
+
         if ($request->hasFile('raw_file')) {
             $path = $request->raw_file->path();
             $extension = $request->raw_file->extension();
@@ -25,7 +27,7 @@ class EncryptionController extends Controller
             $encryptedContent = OpenSSLEncryption::encrypt($content);
             
             if($request->encrypted_file_name){
-                $file_name = $request->encrypted_file_name;
+                $file_name = $request->encrypted_file_name . '.' . $extension;
             }else{
                 $file_name = time() .  '.' . $extension;
             }
@@ -49,15 +51,17 @@ class EncryptionController extends Controller
             'encrypted_file' => 'required',
         ]);
 
+        $crypto_obj = new OpenSSLEncryption();
+
         if ($request->hasFile('encrypted_file')) {
             $path = $request->encrypted_file->path();
             $extension = $request->encrypted_file->extension();
             $content = file_get_contents($path);
             // $decryptedContent = Crypt::decryptString($content);
-            $decryptedContent = OpenSSLEncryption::decrypt($content);
+            $decryptedContent =OpenSSLEncryption::decrypt($content);
             
             if($request->decrypted_file_name){
-                $file_name = $request->decrypted_file_name;
+                $file_name = $request->decrypted_file_name . '.' . $extension;
             }else{
                 $file_name = time() .  '.' . $extension;
             }
