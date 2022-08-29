@@ -32,8 +32,10 @@ class EncryptionController extends Controller
                 $file_name = time() .  '.' . $extension;
             }
 
-            if($request->encryption_save_location){
-                file_put_contents($request->encryption_save_location . '/' . $file_name, $encryptedContent);
+            $save_path = $request->encryption_save_location;
+
+            if($save_path){
+                file_put_contents($save_path . '/' . $file_name, $encryptedContent);
             }
             else{
                 Storage::put('encrypted_files/' . $file_name, $encryptedContent);
@@ -52,10 +54,16 @@ class EncryptionController extends Controller
         ]);
 
         $crypto_obj = new OpenSSLEncryption();
-
+        
         if ($request->hasFile('encrypted_file')) {
-            $path = $request->encrypted_file->path();
-            $extension = $request->encrypted_file->extension();
+            $file = $request->encrypted_file;
+            $path = $file->path();
+            
+            // $extension = $file->extension();
+
+            $file = $file->getClientOriginalName();
+            $extension = pathinfo($file, PATHINFO_EXTENSION);
+
             $content = file_get_contents($path);
             // $decryptedContent = Crypt::decryptString($content);
             $decryptedContent =OpenSSLEncryption::decrypt($content);
@@ -66,8 +74,10 @@ class EncryptionController extends Controller
                 $file_name = time() .  '.' . $extension;
             }
 
-            if($request->decryption_save_location){
-                file_put_contents($request->decryption_save_location . '/' . $file_name, $decryptedContent);
+            $save_path = $request->decryption_save_location;
+
+            if($save_path){
+                file_put_contents($save_path  . '/' . $file_name,  $decryptedContent);
             }
             else{
                 Storage::put('decrypted_files/' . time() .  '.' . $extension, $decryptedContent);
